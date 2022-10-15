@@ -1,0 +1,7 @@
+python satelliteCommandLineUtil.py AQUA --help
+python satelliteCommandLineUtil.py ICESAT2 --help
+python satelliteCommandLineUtil.py CALIPSO --help
+
+python satelliteCommandLineUtil.py AQUA 2022-01-01 2022-01-02 L3b *DAY_CHL*
+python satelliteCommandLineUtil.py ICESAT2 ATL03 2018-01-01 00:00:00 2022-01-01 21:27:18 --bounding_box='-78.82,22.96,-74.62,26.9' *ATL03_20181014083516*
+python satelliteCommandLineUtil.py CALIPSO LID_L1-Standard-V4-11 2022 01
