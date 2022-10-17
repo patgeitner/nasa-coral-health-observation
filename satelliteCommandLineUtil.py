@@ -2,8 +2,13 @@ import argparse
 import datetime
 import itertools
 import json
-impoimport pwinput
+import numpy as np
+import pandas as pd
+import psycopg2
 import urllib
+import netCDF4
+import os
+import time
 
 from bs4 import BeautifulSoup
 from http.cookiejar import CookieJar
@@ -18,7 +23,7 @@ ROOT_URL_ICESAT2 = "https://cmr.earthdata.nasa.gov/search/granules.json?provider
 
 # Request for MODIS
 def retrieveModisFiles(satellite, start_date, end_date, level, file_pattern):
-	url = ROOT_URL_MODIS + "sensor={0}&sdate={1}&edate={2}&dtype={3}&search={4}&addurl=1&results_as_file=1"\
+	url = ROOT_URL_MODIS + "sensor={0}&sdate={1}&edate={2}&dtype={3}&search={4}&addurl=1&results_as_file=1&std_only1&subType1"\
 			.format(satellite, start_date, end_date, level, file_pattern)
 	
 	print("Requesting: {0}\n".format(url))
@@ -27,7 +32,7 @@ def retrieveModisFiles(satellite, start_date, end_date, level, file_pattern):
 
 	if file_urls[0] != '':
 		print("Found {0} files.\n".format(len(file_urls)))
-		return file_urls
+		return file_urls[:1]
 	else:
 		print("No files found.\n")
 		return None
@@ -53,6 +58,7 @@ def retrieveCalipsoFiles(dataset, year, month):
 		print("No files found.\n")
 		return None
 
+# Request for ICESAT2
 def retrieveIceSat2Files(short_name, time_start, time_end, bounding_box, file_pattern):
 	url = ROOT_URL_ICESAT2 + "short_name={0}&temporal[]={1},{2}&bounding_box={3}"\
 			.format(short_name, time_start, time_end, bounding_box)
@@ -73,7 +79,7 @@ def retrieveIceSat2Files(short_name, time_start, time_end, bounding_box, file_pa
 		print("No files found.\n")
 		return None
 
-
+# Code taken from: https://nsidc.org/data/icesat-2/tools
 def build_filename_filter(file_pattern):
 	filters = file_pattern.split(',')
 	result = '&options[producer_granule_id][pattern]=true'
@@ -127,45 +133,89 @@ def downloadFiles(file_urls, satellite):
 		print("Please sign in to Earthdata to download the files.")
 		usr = input("Username:")
 		p = input("Password:")
-	print('Downloading Files.')
-	for url in tqdm(file_urls):
-		filename = url.split('/')[-1]
-		if(satellite == 'AQUA' or satellite == 'TERRA'):
-			urlretrieve(url + "?appkey=7643fa13d56ea5f80d44d6647e98bfd4409eefb3", './files/MODIS/'+filename)
-		elif(satellite == 'CALIPSO'):
-			urlretrieve(url, './files/CALIPSO/'+filename)
-		elif(satellite == 'ICESAT2'):
-			# Code taken from: https://wiki.earthdata.nasa.gov/display/EL/How+To+Access+Data+With+Python
 
-			# Create a password manager to deal with the 401 reponse that is returned from
-			# Earthdata Login
-			password_manager = urllib.request.HTTPPasswordMgrWithDefaultRealm()
-			password_manager.add_password(None, "https://urs.earthdata.nasa.gov", usr, p)
-			
-			# Create a cookie jar for storing cookies. This is used to store and return
-			# the session cookie given to use by the data server (otherwise it will just
-			# keep sending us back to Earthdata Login to authenticate).  Ideally, we
-			# should use a file based cookie jar to preserve cookies between runs. This
-			# will make it much more efficient.
-			
-			cookie_jar = CookieJar()
-			
-			# Install all the handlers.
-			opener = urllib.request.build_opener(
-				urllib.request.HTTPBasicAuthHandler(password_manager),
-				#urllib2.HTTPHandler(debuglevel=1),    # Uncomment these two lines to see
-				#urllib2.HTTPSHandler(debuglevel=1),   # details of the requests/responses
-				urllib.request.HTTPCookieProcessor(cookie_jar))
-			urllib.request.install_opener(opener)
-			
-			
-			# Create and submit the request. There are a wide range of exceptions that
-			# can be thrown here, including HTTPError and URLError. These should be
-			# caught and handled.
-			urlretrieve(url, './files/ICESAT2/'+filename)
+		# Code taken from: https://wiki.earthdata.nasa.gov/display/EL/How+To+Access+Data+With+Python
 
+		# Create a password manager to deal with the 401 reponse that is returned from
+		# Earthdata Login
+		password_manager = urllib.request.HTTPPasswordMgrWithDefaultRealm()
+		password_manager.add_password(None, "https://urs.earthdata.nasa.gov", usr, p)
+		
+		# Create a cookie jar for storing cookies. This is used to store and return
+		# the session cookie given to use by the data server (otherwise it will just
+		# keep sending us back to Earthdata Login to authenticate).  Ideally, we
+		# should use a file based cookie jar to preserve cookies between runs. This
+		# will make it much more efficient.
+		
+		cookie_jar = CookieJar()
+		
+		# Install all the handlers.
+		opener = urllib.request.build_opener(
+			urllib.request.HTTPBasicAuthHandler(password_manager),
+			#urllib2.HTTPHandler(debuglevel=1),    # Uncomment these two lines to see
+			#urllib2.HTTPSHandler(debuglevel=1),   # details of the requests/responses
+			urllib.request.HTTPCookieProcessor(cookie_jar))
+		urllib.request.install_opener(opener)
 
-        
+		output = "./files/ICESAT2/"
+
+	# Connecting to database and inserting data
+	try:
+		print("Connecting to database.")
+		conn = psycopg2.connect(database="GOTECH",
+							host="localhost",
+							user="postgres",
+							password="",
+							port="5432")
+		cursor = conn.cursor()
+		print("Connection to database was successful.\n")
+
+		print("Storing data from files")
+		rowcount = 0
+		for url in tqdm(file_urls):
+			filename = url.split('/')[-1]
+
+			if(satellite == 'AQUA' or satellite == 'TERRA'):
+				location = './files/MODIS/'
+
+				urlretrieve(url + "?appkey=7643fa13d56ea5f80d44d6647e98bfd4409eefb3", location+filename)
+
+				# Process data from file
+				data = netCDF4.Dataset(location+filename)
+				chlor = np.array(data.variables['chlor_a'][:])
+				lat = np.array(data.variables['lat'][:])
+				lon = np.array(data.variables['lon'][:])
+				start = " ".join(data.__dict__['time_coverage_start'].strip('000Z').split('T'))
+				end = " ".join(data.__dict__['time_coverage_end'].strip('000Z').split('T'))
+
+				modis_df = pd.DataFrame(chlor, index=lat, columns=lon)
+				modis_df.index.name = 'lat'
+				modis = pd.melt(modis_df.reset_index(), id_vars=['lat'], value_vars=lon)
+				modis.columns = ['lat', 'lon', 'chlor_a']
+				modis.replace(-32767.0, 0, inplace=True)
+
+				# Inserting into Modis table
+				chl_data = modis.to_numpy()
+				for row in chl_data[:10]:
+					query = "INSERT INTO MODIS VALUES ({0}, {1}, {2}, '{3}', '{4}')".format(row[0], row[1], row[2], start, end)
+					cursor.execute(query)
+					rowcount += 1
+
+			elif(satellite == 'CALIPSO'):
+				location = './files/CALIPSO/'
+				urlretrieve(url, location+filename)
+			elif(satellite == "ICESAT2"):
+				location = './files/ICESAT2/'
+				urlretrieve(url, location+filename)
+
+			conn.commit()
+			#os.remove(location+filename)
+		
+		print("{0} records have been inserted.".format(rowcount))
+		conn.close()
+	except Exception as error:
+		print(error)
+
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description='Utility to download data from NASA satellites. Supports the following satellites: Calipso, ICESat-2, Aqua/Terra MODIS, and Landsat.')
 	subparsers = parser.add_subparsers(help='All commands.', dest="satellite")
@@ -178,19 +228,10 @@ if __name__ == "__main__":
 	parser_aqua.add_argument('file_pattern', type=str, help="Files will be matched according to the wildcard pattern provided.")
 
 	parser_terra = subparsers.add_parser("TERRA", help='Required arguments for AQUA/TERRA satellite.')
-	parser_terra.add_argument('sdate', type=lambda s: datetime.datetime.strptime(s, '%Y-%m-%d').date(), help="Starting date of data collection e.g. 2022-01-01.")
-	parser_terra.add_argument('edate', type=lambda s: datetime.datetime.strptime(s, '%Y-%m-%d').date(), help="Ending date of data collection.")
-', type=str)
-	parser_calipso.add_argument('year', type=str)
-	parser_calipso.add_argument('month', type=str)
-
-	# Parser for ICESat-2
-	parser_icesat = subparsers.add_parser('ICESAT2', help='Required arguments for ICESAT-2 satellite.')
-	parser_icesat.add_argument('short_name', type=str, help="The data product of interest e.g. ATL03")
-	parser_icesat.add_argument('start_date', type=lambda s: datetime.datetime.strptime(s, "%Y-%m-%d").date(), help="The start date to search for data e.g. 2022-01-01")
-	parser_icesat.add_argument('start_time', type=lambda s: datetime.datetime.strptime(s, "%H:%M:%S").time(), help="The start time to search for data e.g. 23:59:59")
-	parser_icesat.add_argument('end_date', type=lambda s: datetime.datetime.strptime(s, "%Y-%m-%d").date(), help="The end date to search for data")
-	parser_icesat.add_argument('end_time', type=lambda s: datetime.datetime.strptime(s, "%H:%M:%S").time(), help="The end time to search for data")
+	parser_terra.add_argument('start_date', type=lambda s: datetime.datetime.strptime(s, '%Y-%m-%d').date(), help="Starting date of data collection e.g. 2022-01-01.")
+	parser_terra.add_argument('end_date', type=lambda s: datetime.datetime.strptime(s, '%Y-%m-%d').date(), help="Ending date of data collection.")
+")
+"The end time to search for data")
 	parser_icesat.add_argument('--bounding_box', type=str, required=True, help="The area to retrieve data from. e.g. -78.82,22.96,-74.62,26.9")
 	parser_icesat.add_argument('file_pattern', type=str, help="Files will be matched according to the wildcard pattern provided.")
 	
