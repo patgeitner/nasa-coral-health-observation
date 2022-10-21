@@ -228,10 +228,24 @@ if __name__ == "__main__":
 	parser_aqua.add_argument('file_pattern', type=str, help="Files will be matched according to the wildcard pattern provided.")
 
 	parser_terra = subparsers.add_parser("TERRA", help='Required arguments for AQUA/TERRA satellite.')
-	parser_terra.add_argument('start_date', type=lambda s: datetime.datetime.strptime(s, '%Y-%m-%d').date(), help="Starting date of data collection e.g. 2022-01-01.")
-	parser_terra.add_argument('end_date', type=lambda s: datetime.datetime.strptime(s, '%Y-%m-%d').date(), help="Ending date of data collection.")
-")
-"The end time to search for data")
+	parser_terra.add_argument('sdate', type=lambda s: datetime.datetime.strptime(s, '%Y-%m-%d').date(), help="Starting date of data collection e.g. 2022-01-01.")
+	parser_terra.add_argument('edate', type=lambda s: datetime.datetime.strptime(s, '%Y-%m-%d').date(), help="Ending date of data collection.")
+	parser_terra.add_argument('level', type=str, choices=['L0', 'L1', 'L2', 'L3b', 'L3m'], help="Product Level. See https://oceancolor.gsfc.nasa.gov/products/ for more info.")
+	parser_terra.add_argument('file_pattern', type=str, help="Files will be matched according to the wildcard pattern provided.")
+
+	# Parser for CALIPSO
+	parser_calipso = subparsers.add_parser('CALIPSO', help='Required arguments for CALIPSO satellite.')
+	parser_calipso.add_argument('dataset', type=str)
+	parser_calipso.add_argument('year', type=str)
+	parser_calipso.add_argument('month', type=str)
+
+	# Parser for ICESat-2
+	parser_icesat = subparsers.add_parser('ICESAT2', help='Required arguments for ICESAT-2 satellite.')
+	parser_icesat.add_argument('short_name', type=str, help="The data product of interest e.g. ATL03")
+	parser_icesat.add_argument('start_date', type=lambda s: datetime.datetime.strptime(s, "%Y-%m-%d").date(), help="The start date to search for data e.g. 2022-01-01")
+	parser_icesat.add_argument('start_time', type=lambda s: datetime.datetime.strptime(s, "%H:%M:%S").time(), help="The start time to search for data e.g. 23:59:59")
+	parser_icesat.add_argument('end_date', type=lambda s: datetime.datetime.strptime(s, "%Y-%m-%d").date(), help="The end date to search for data")
+	parser_icesat.add_argument('end_time', type=lambda s: datetime.datetime.strptime(s, "%H:%M:%S").time(), help="The end time to search for data")
 	parser_icesat.add_argument('--bounding_box', type=str, required=True, help="The area to retrieve data from. e.g. -78.82,22.96,-74.62,26.9")
 	parser_icesat.add_argument('file_pattern', type=str, help="Files will be matched according to the wildcard pattern provided.")
 	
