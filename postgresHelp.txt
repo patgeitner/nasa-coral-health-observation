@@ -1,0 +1,15 @@
+Download: https://www.postgresql.org/download/
+Setup user as postgres and port number 5432.
+In the Stack Builder, under spatial extensions, install postgis.
+
+
+Create the database by cd into folder and run "sh initDatabase.sh"
+Open another terminal and run the command "psql -U postgres"
+Run "\c GOTECH" to connect to the created database.
+Run "\dx" to make sure the postgis extension was created.
+In your other terminal, run "sh createTables.sh"
+After, in the terminal that is connected to the database, run "\dt" to make sure all tables have been added.
+
+Extra Postgres commands:
+Table schema: \d {table_name}
+Distance between points (in meters): SELECT ST_Distance(a.geo, b.geo) FROM icesat2 a CROSS JOIN icesat2 b; 

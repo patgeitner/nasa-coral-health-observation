@@ -7,11 +7,11 @@ import pandas as pd
 import psycopg2
 import urllib
 import netCDF4
-import os
-import time
 
 from bs4 import BeautifulSoup
 from http.cookiejar import CookieJar
+from landsatxplore.api import API
+from landsatxplore.earthexplorer import EarthExplorer
 from tqdm import tqdm
 from urllib.request import urlopen
 from urllib.request import urlretrieve
@@ -78,6 +78,30 @@ def retrieveIceSat2Files(short_name, time_start, time_end, bounding_box, file_pa
 	else:
 		print("No files found.\n")
 		return None
+
+def retrieveLandsatFiles(dataset, start_date, end_date, bounding_box):
+	print("Please sign in to Earth Explorer to access Landsat files.")
+	usr = input("Username:")
+	p = input("Password:")
+
+	api = API(usr, p)
+	
+	bbox = eval(bounding_box)
+	files = api.search(
+				dataset=dataset,
+				start_date=str(start_date),
+				end_date=str(end_date),
+				bbox=bbox)
+	api.logout()
+
+	print(files[0])
+	if files != []:
+		print("Found {0} files.\n".format(len(files)))
+		return files
+	else:
+		print("No files found.\n")
+		return None
+
 
 # Code taken from: https://nsidc.org/data/icesat-2/tools
 def build_filename_filter(file_pattern):
@@ -157,8 +181,6 @@ def downloadFiles(file_urls, satellite):
 			urllib.request.HTTPCookieProcessor(cookie_jar))
 		urllib.request.install_opener(opener)
 
-		output = "./files/ICESAT2/"
-
 	# Connecting to database and inserting data
 	try:
 		print("Connecting to database.")
@@ -172,7 +194,7 @@ def downloadFiles(file_urls, satellite):
 
 		print("Storing data from files")
 		rowcount = 0
-		for url in tqdm(file_urls):
+		for url in tqdm(file_urls[:1]):
 			filename = url.split('/')[-1]
 
 			if(satellite == 'AQUA' or satellite == 'TERRA'):
@@ -207,7 +229,9 @@ def downloadFiles(file_urls, satellite):
 			elif(satellite == "ICESAT2"):
 				location = './files/ICESAT2/'
 				urlretrieve(url, location+filename)
-
+			elif(satellite == "LANDSAT"):
+				print("DO STUFF")
+				
 			conn.commit()
 			#os.remove(location+filename)
 		
@@ -248,6 +272,13 @@ if __name__ == "__main__":
 	parser_icesat.add_argument('end_time', type=lambda s: datetime.datetime.strptime(s, "%H:%M:%S").time(), help="The end time to search for data")
 	parser_icesat.add_argument('--bounding_box', type=str, required=True, help="The area to retrieve data from. e.g. -78.82,22.96,-74.62,26.9")
 	parser_icesat.add_argument('file_pattern', type=str, help="Files will be matched according to the wildcard pattern provided.")
+
+	# Parser for Landsat
+	parser_icesat = subparsers.add_parser('LANDSAT', help='Required arguments for LANDSAT satellite.')
+	parser_icesat.add_argument('short_name', type=str, help="The data product of interest e.g. ATL03")
+	parser_icesat.add_argument('start_date', type=lambda s: datetime.datetime.strptime(s, "%Y-%m-%d").date(), help="The start date to search for data e.g. 2022-01-01")
+	parser_icesat.add_argument('end_date', type=lambda s: datetime.datetime.strptime(s, "%Y-%m-%d").date(), help="The end date to search for data")
+	parser_icesat.add_argument('--bounding_box', type=str, required=True, help="The area to retrieve data from. e.g. -78.82,22.96,-74.62,26.9")
 	
 	args = parser.parse_args()
 	file_urls = []
@@ -283,6 +314,12 @@ if __name__ == "__main__":
 		bounding_box = args.bounding_box
 		file_pattern = args.file_pattern
 		file_urls = retrieveIceSat2Files(short_name, start_date_time, end_date_time, bounding_box, file_pattern)
+	elif(satellite == "LANDSAT"):
+		short_name = args.short_name
+		start_date = args.start_date
+		end_date = args.end_date
+		bounding_box = args.bounding_box
+		file_urls = retrieveLandsatFiles(short_name, start_date, end_date, bounding_box)
 
 	if(file_urls != None):
 		downloadFiles(file_urls, satellite)
