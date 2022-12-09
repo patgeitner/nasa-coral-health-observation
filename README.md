@@ -1,12 +1,9 @@
 
+
 # Universal Remote Observation of Coral Health (UROCH): Studying the Efficacy of Extending Existing NASA Instruments to Detect and Monitor Coral Reefs 
 ## Sponsor: NASA
 ## Co-authors: 
-- Lisa Pink
-- Matthew Johnson
-- Mohamad Ali Kalassina 
-- Patrick Geitner 
-- Thomas Durkin
+Lisa Pink, Matthew Johnson, Mohamad Ali Kalassina, Patrick Geitner, Thomas Durkin
 
 ## Abstract
 
@@ -14,12 +11,23 @@ Coral reefs, one of the most biodiverse ecosystems on the planet, are facing the
 
 
 ## Installation/Setup
+A Google Earth Engine account is needed in order to access satellite. Proceed to https://earthengine.google.com to create an account.
 
 ## Exploratory Data Analysis
 
 ## Data Collection
 
 ## Modeling
+1). Coral Presence
 
-## Streamlit Dashboard
+
+2). Bleaching
+
+## Streamlit Dashboard for the Northern Caribbean
+A dashboard that can be used to make real time predictions for a single location. Utilizes our coral presence models to determine whether the location is coral or not. If the prediction is coral, our bleaching model will be used to output a level of risk to the coral's health as well as a bleaching analysis. The user may use the date input to see the change in sea surface temperature over a 90 day period.
+#### Required packages and versions:
+- streamlit v ...
+- xgboost v ...
+- sklearn v ...
+#### Usage: streamlit run 1_Home.py
 
