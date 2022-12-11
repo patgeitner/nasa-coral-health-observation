@@ -1,8 +1,6 @@
 
-
-# Universal Remote Observation of Coral Health (UROCH): Studying the Efficacy of Extending Existing NASA Instruments to Detect and Monitor Coral Reefs 
 ![](https://github.com/patgeitner/nasa-coral-health-observation/blob/main/Images/rochester-logo.png)
-![](https://github.com/patgeitner/nasa-coral-health-observation/blob/main/Images/nasa-logo.jpeg)
+# Universal Remote Observation of Coral Health (UROCH): Studying the Efficacy of Extending Existing NASA Instruments to Detect and Monitor Coral Reefs 
 
 ## Sponsor: NASA
 ## Co-authors: 
