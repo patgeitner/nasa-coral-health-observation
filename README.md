@@ -15,7 +15,7 @@ Coral reefs, one of the most biodiverse ecosystems on the planet, are facing the
 A Google Earth Engine account is needed in order to access the satellite data. Proceed to https://earthengine.google.com to create an account.
 
 ## Data Collection
-To collect the satellite data needed to build the models for coral presence, data from Allen Coral Atlas' bethic map is needed. See the **SetupAllenCoralData** Jupyter Notebook to create the coral dataset.
+To collect the satellite data needed to build the models for coral presence, data from Allen Coral Atlas' bethic map is needed. See the **SetupAllenCoralData** Jupyter Notebook to create the coral dataset. To collect the satellite data need to build the bleaching model, data from the Global Coral Bleaching Database is used. Now that the two essential coral files are setup, utilizing the **CollectSatelliteData** Jupyter Notebook will collect data for each of the satellites and merge them together.
 
 
 ## Modeling
