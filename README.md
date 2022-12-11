@@ -11,11 +11,11 @@ Coral reefs, one of the most biodiverse ecosystems on the planet, are facing the
 
 
 ## Installation/Setup
-A Google Earth Engine account is needed in order to access satellite data. Proceed to https://earthengine.google.com to create an account.
-
-## Exploratory Data Analysis
+A Google Earth Engine account is needed in order to access the satellite data. Proceed to https://earthengine.google.com to create an account.
 
 ## Data Collection
+To collect the satellite data needed to build the models for coral presence, data from Allen Coral Atlas' bethic map is needed. See the **SetupAllenCoralData** Jupyter Notebook to create the coral dataset.
+
 
 ## Modeling
 1). Coral Presence
