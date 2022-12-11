@@ -25,6 +25,9 @@ A Google Earth Engine account is needed in order to access satellite data. Proce
 
 ## Streamlit Dashboard for the Northern Caribbean
 A dashboard that can be used to make real time predictions for a single location. Utilizes our coral presence models to determine whether the location is coral or not. If the prediction is coral, our bleaching model will be used to output a level of risk to the coral's health as well as a bleaching analysis. The user may use the date input to see the change in sea surface temperature over a 90 day period.
+
+![](https://github.com/patgeitner/nasa-coral-health-observation/blob/main/Images/Dashboard.png)
+
 #### Troubleshooting:
 Try using these package versions
 - streamlit version 1.11.0
