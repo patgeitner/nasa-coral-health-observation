@@ -11,7 +11,7 @@ Coral reefs, one of the most biodiverse ecosystems on the planet, are facing the
 
 
 ## Installation/Setup
-A Google Earth Engine account is needed in order to access satellite. Proceed to https://earthengine.google.com to create an account.
+A Google Earth Engine account is needed in order to access satellite data. Proceed to https://earthengine.google.com to create an account.
 
 ## Exploratory Data Analysis
 
