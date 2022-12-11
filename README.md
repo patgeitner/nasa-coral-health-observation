@@ -28,10 +28,10 @@ A dashboard that can be used to make real time predictions for a single location
 
 ![](https://github.com/patgeitner/nasa-coral-health-observation/blob/main/Images/Dashboard.png)
 
-#### Troubleshooting:
-Try using these package versions
+### Troubleshooting:
+*Try using these package versions*
 - streamlit version 1.11.0
 - xgboost version 1.3.2
 - sklearn version 1.1.2
-#### Usage: streamlit run 1_Home.py
+### Usage: streamlit run 1_Home.py
 
