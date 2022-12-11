@@ -11,11 +11,11 @@ Coral reefs, one of the most biodiverse ecosystems on the planet, are facing the
 
 
 ## Installation/Setup
-A Google Earth Engine account is needed in order to access satellite data. Proceed to https://earthengine.google.com to create an account.
-
-## Exploratory Data Analysis
+A Google Earth Engine account is needed in order to access the satellite data. Proceed to https://earthengine.google.com to create an account.
 
 ## Data Collection
+To collect the satellite data needed to build the models for coral presence, data from Allen Coral Atlas' bethic map is needed. See the **SetupAllenCoralData** Jupyter Notebook to create the coral dataset.
+
 
 ## Modeling
 1). Coral Presence
@@ -25,10 +25,13 @@ A Google Earth Engine account is needed in order to access satellite data. Proce
 
 ## Streamlit Dashboard for the Northern Caribbean
 A dashboard that can be used to make real time predictions for a single location. Utilizes our coral presence models to determine whether the location is coral or not. If the prediction is coral, our bleaching model will be used to output a level of risk to the coral's health as well as a bleaching analysis. The user may use the date input to see the change in sea surface temperature over a 90 day period.
-#### Troubleshooting:
-Try using these package versions
+
+![](https://github.com/patgeitner/nasa-coral-health-observation/blob/main/Images/Dashboard.png)
+
+### Troubleshooting:
+*Try using these package versions*
 - streamlit version 1.11.0
 - xgboost version 1.3.2
 - sklearn version 1.1.2
-#### Usage: streamlit run 1_Home.py
+### Usage: streamlit run 1_Home.py
 
