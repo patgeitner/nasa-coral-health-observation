@@ -6,8 +6,8 @@
   <img alt="Light" src="https://github.com/patgeitner/nasa-coral-health-observation/blob/main/Images/NASA_logo.svg.webp" width="30%">
 </p>
 
-## Sponsor: NASA
-## Co-authors: 
+### Sponsor: NASA
+### Co-authors: 
 Lisa Pink, Matthew Johnson, Mohamad Ali Kalassina, Patrick Geitner, Thomas Durkin
 
 ## Abstract
@@ -19,7 +19,11 @@ Coral reefs, one of the most biodiverse ecosystems on the planet, are facing the
 A Google Earth Engine account is needed in order to access the satellite data. Proceed to https://earthengine.google.com to create an account.
 
 ## Data Collection
-To collect the satellite data needed to build the models for coral presence, data from Allen Coral Atlas' bethic map is needed. See the **SetupAllenCoralData** Jupyter Notebook to create the coral dataset. To collect the satellite data need to build the bleaching model, data from the Global Coral Bleaching Database is used. Now that the two essential coral files are setup, utilizing the **CollectSatelliteData** Jupyter Notebook will collect data for each of the satellites and merge them together.
+To collect the satellite data needed to build the models for coral presence, data from Allen Coral Atlas' bethic map is needed. See the **SetupAllenCoralData** Jupyter Notebook to create the coral dataset. 
+
+To collect the satellite data needed to build the bleaching model, data from the Global Coral Bleaching Database is used. 
+
+After both these essential coral data files are setup, utilizing the **CollectSatelliteData** Jupyter Notebook will collect data for each of the satellites and merge them together.
 
 
 ## Modeling
@@ -29,7 +33,7 @@ To collect the satellite data needed to build the models for coral presence, dat
 2). Bleaching
 
 ## Streamlit Dashboard for the Northern Caribbean
-A dashboard that can be used to make real time predictions for a single location. Utilizes our coral presence models to determine whether the location is coral or not. If the prediction is coral, our bleaching model will be used to output a level of risk to the coral's health as well as a bleaching analysis. The user may use the date input to see the change in sea surface temperature over a 90 day period.
+This is a dashboard that can be used to make real time predictions for a single location on both coral presence and coral bleaching. It tilizes our coral presence models to determine whether the location is coral or not. If the prediction is coral, our bleaching model will be used to output a level of risk to the coral's health as well as a bleaching analysis. The user may use the date input to see the change in sea surface temperature over a 90 day period.
 
 ![](https://github.com/patgeitner/nasa-coral-health-observation/blob/main/Images/Dashboard.png)
 
