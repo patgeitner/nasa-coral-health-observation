@@ -41,7 +41,7 @@ With the datasets generated and features added, we can train machine learning mo
 3). The **CoralBleachingModeling** notebook walks through the training and evaluation of models to predict the percentage bleaching a given coral has experienced. We explore regression, ranking, and classification methods.
 
 ## Sample Data
-This folder contains small samples of the final coral/algae presence and coral bleaching datasets that we used to train our machine learning models. Full versions of these datasets can be found at [LINK]
+This folder contains small samples of the final coral/algae presence and coral bleaching datasets that we used to train our machine learning models. Full datasets could not be uploaded as they were too large.
 
 ## Streamlit Dashboard for the Northern Caribbean
 This is a dashboard that can be used to make real time predictions for a single location on both coral presence and coral bleaching. It utilizes our coral presence models to determine whether the location is coral or not. If the prediction is coral, our bleaching model will be used to output a level of risk to the coral's health as well as a bleaching analysis. The user may use the date input to see the change in sea surface temperature over a 90 day period.
