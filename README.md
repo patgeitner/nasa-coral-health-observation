@@ -17,6 +17,8 @@ Coral reefs, one of the most biodiverse ecosystems on the planet, are facing the
 ## Installation/Setup
 A Google Earth Engine account is needed in order to access the satellite data. Proceed to https://earthengine.google.com to create an account.
 
+To download the coral data needed for building the coral presence models, create on Allen Coral Atlas: https://allencoralatlas.org
+
 ## Data Collection
 The following notebooks are used to process and merge the coral datasets and add the satellite data:
 
